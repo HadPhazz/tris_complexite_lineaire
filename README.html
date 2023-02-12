@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>README.md</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+  <link rel="stylesheet" href="md.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="nsi-terminale--msd-radix-sort">Activité NSI Terminale : MSD Radix Sort</h1>
+<p><strong>Prérequis de l’	activité :</strong></p>
+<ul>
+<li>Avoir vu les tris par comparaison</li>
+<li>Avoir vu la méthode “Diviser Pour Régner”.</li>
+<li>Connaitre les classes de complexité suivantes : <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo><mo separator="true">,</mo><mi>O</mi><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo><mo separator="true">,</mo><mi>O</mi><mo stretchy="false">(</mo><mi>n</mi><mi>log</mi><mo>⁡</mo><mi>n</mi><mo stretchy="false">)</mo><mo separator="true">,</mo><mi>O</mi><mo stretchy="false">(</mo><mi>n</mi><mn>2</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(1), O(n), O(n \log n), O(n2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord mathnormal" style="margin-right: 0.02778em;">O</span><span class="mopen">(</span><span class="mord">1</span><span class="mclose">)</span><span class="mpunct">,</span><span class="mspace" style="margin-right: 0.166667em;"></span><span class="mord mathnormal" style="margin-right: 0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mclose">)</span><span class="mpunct">,</span><span class="mspace" style="margin-right: 0.166667em;"></span><span class="mord mathnormal" style="margin-right: 0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right: 0.166667em;"></span><span class="mop">lo<span style="margin-right: 0.01389em;">g</span></span><span class="mspace" style="margin-right: 0.166667em;"></span><span class="mord mathnormal">n</span><span class="mclose">)</span><span class="mpunct">,</span><span class="mspace" style="margin-right: 0.166667em;"></span><span class="mord mathnormal" style="margin-right: 0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mord">2</span><span class="mclose">)</span></span></span></span></span></li>
+<li>Savoir illustrer la complexité temporelle d’un tri par un graphique</li>
+</ul>
+<p><strong>Apports de l’activité :</strong></p>
+<ul>
+<li>Présentation des tris par distribution</li>
+<li>Présentation du <em>MSD Radix Sort</em></li>
+<li>Mise en place de ce tri sur des listes de mots (implémentation en Python)</li>
+<li>Etude de complexité de ce tri (analyse et interprétation de courbes)</li>
+</ul>
+<h2 id="présentation-du-tri-par-base--radix-sort">Présentation du tri par base / Radix sort</h2>
+<p>Le  <strong>tri par base</strong>  (Radix Sort en anglais) est un algorithme de tri par distribution, utilisant le tri par dénombrement comme routine d’exécution, sur des listes de  <strong>nombres entiers</strong>  (naturels et relatifs), de  <strong>nombres décimaux</strong>  finis, mais aussi sur des listes de  <strong>chaines de caractères</strong>  (mots, emails, …).</p>
+<p>Cet algorithme trie les données avec des clés définies selon l’ordre lexicographique, en les regroupant par des digits individuels (chiffres, caractères, symboles) qui partagent la même position significative et la même valeur.<br>
+Le  <strong>Radix</strong>  (la base) est le nombre de digits utilisé pour représenter un nombre dans un système de numérotation positionnel. (2 pour le binaire, 8 pour l’octal, 10 pour le décimal, …).</p>
+<p>Quelque soit le type des éléments de la liste passée en paramètre de cet algorithme, une clé, sous la forme d’un entier, sera associée à chaque digit.  Les éléments ne seront donc pas triés d’une manière comparative, mais en fonction des digits significatifs qui les composent.</p>
+<p>Le tri par base se décompose en deux variantes :</p>
+<ul>
+<li>
+<p>Le <strong>LSD Radix Sort</strong>  (bit de poids faible/plus petit élément significatif) : Généralement utilisé pour les données numériques (entiers, flottants) en commençant par le chiffre des unités, puis celui des dizaines, … de la droite vers la gauche.</p>
+</li>
+<li>
+<p>Le  <strong>MSD Radix Sort</strong>  (bit de poids fort/plus grand élément significatif) : Généralement utilisé pour les données lexicographiques (mots, phrases, …) en triant les éléments dans le sens de lecture (de gauche à droite), du premier caractère rencontré jusqu’au dernier.</p>
+</li>
+</ul>
+<p>Les deux versions peuvent traiter des données numériques et lexicographiques, cependant, la version MSD prends en charge des mots de longueur différente, à l’inverse de la version LSD.</p>
+<p>Dans la version du tri par base que nous allons analyser au cours de cette activité, nous nous intéresserons à la version <strong>MSD</strong> ce de dernier sur des chaines de caractères. Le <em>MSD Radix Sort</em> opère de la sorte :</p>
+<ol>
+<li>Prendre le  <strong>caractère le plus significatif</strong>  de chaque chaine de caractère de la liste comme clé (la première lettre du mot dans notre cas)</li>
+<li><strong>Trier par comptage</strong>  les mots en les ordonnant selon cette  <strong>clé</strong> dans des structures de données temporaires (processus de distribution)</li>
+<li>Assembler les mots triés en une seule liste (concaténation selon l’ordre alphabétique)</li>
+<li>Répéter avec les  <strong>caractères moins significatifs</strong>  (la deuxième lettre, puis la troisième, …).</li>
+</ol>
+<p>Pour toute liste de nombres en base  <em>n</em>, cet algorithme utilisera au maximum  <em>n</em>  structures de données temporaires, définies en fonction des chiffres qui composent les nombres de la liste. Dans le cas de chaines de caractères, et en particulier de mots de la langue Française, il y’aura, au plus, vingt-six structures de données temporaires (cela correspond au nombre de lettres de notre alphabet).</p>
+<h2 id="activité">Activité</h2>
+<h3 id="questions-de-compréhension">Questions de compréhension</h3>
+<p><strong>1.</strong> En faisant appel aux notions apprises en classe de première et en classe de terminale, citez au moins quatre algorithmes de tri, expliquez brièvement leur fonctionnement et indiquez ceux qui utilisent la méthode “Diviser pour régner”.</p>
+<p><strong>2.</strong> En utilisant vos connaissances et la brève présentation de l’algorithme du <em>tri par base</em>, expliquez le fonctionnement de ce dernier, dans sa version <em>LSD</em>, sur la liste de nombre suivante : [7, 19, 0, 1, 74, 36].<br>
+Indiquez de plus le nombre de passes de l’algorithme sur cette liste. Peut-on le savoir, avant même de commencer le tri ? Si oui, comment ?</p>
+<p><strong>3.</strong> Expliquez maintenant le fonctionnement de l’algorithme du <em>tri par base</em>, dans sa version <em>MSD</em>, sur la liste de mots suivante :  [RUE, BAR, BUS, HUB, ARC]. Indiquez également le nombre de passes à réaliser.</p>
+<p><strong>4.</strong> Ecrivez un pseudo-algorithme du <em>tri par base</em>, dans sa version <em>MSD</em>, tel qu’il agirais sur une liste finie de mots de tailles égales.</p>
+<h3 id="etude-de-cas--le-dictionnaire">Etude de cas : Le dictionnaire</h3>
+<p>Vous interprétez le rôle d’un lexicographe (un rédacteur de dictionnaire de langue) qui, après validation de leur définition et de leur légitimité à intégrer la langue Française, reçoit la liste des nouveaux mots à ajouter dans le dictionnaire pour la nouvelle année.</p>
+<p>Cependant, la liste de mots que vous avez reçu n’est pas triée (les mots ne sont pas classés dans l’ordre alphabétique), vous devez le faire par l’intermédiaire d’un algorithme informatique, afin de les intégrer au dictionnaire par la suite.</p>
+<p>La sélection de mots est la suivante, elle se présente sous la forme d’une liste d’éléments :<br>
+liste_mots = [VISIO, CRYPTO, ECOANXIETE, AQUAPONIE, WOKE, NFT, DISTANCIEL, IEL]</p>
+<p><strong>1.</strong> Ecrivez une fonction qui renvoi le/les plus long mot/s de la liste, en l’occurrence “ECOANXIETE” et “DISTANCIEL”.</p>
+<blockquote>
+<p>La longueur de ce mot sert à déterminer le nombre maximum de passes qu’effectuera l’algorithme sur la liste de mots, afin de trier alphabétiquement ces derniers.</p>
+</blockquote>
+<p><strong>2.</strong> Ecrivez une fonction qui crée un dictionnaire, dont les clés seront les lettres de l’alphabet Français, et les valeurs, des listes.<br>
+Exemple pour la première ligne de ce dictionnaire, appliqué à notre liste :  mots = {“A” : [AQUAPONIE], …}</p>
+<p><strong>3.</strong> Citez la méthode qui renvoi le code Unicode d’un caractère donné en paramètre. En déduire l’intervalle des valeurs pour les lettres allant du A au Z (en majuscule).</p>
+<p><strong>4.</strong> Avec l’aide de vos collègues, vous avez appris à appliquer l’algorithme de <em>tri par base</em> dans sa version <em>MSD</em>, et souhaitez le mettre en œuvre afin de trier la liste de mots définie préalablement.<br>
+Complétez cet algorithme réalisé en Python :</p>
+<pre><code>def tri_radix_MSD(liste, i=0):
+'''
+:param l: (list) une liste de mots
+:param i: (int) la position du premier caractère à regarder, 0 par défaut
+:return: (list) la liste initiale, avec les mots triés dans l'ordre alphabétique
+'''
+
+    if ... : #Cas de la liste vide ou avec un seul élément
+        return ...
+
+    res = []
+    tmp_struct = []
+
+    for x in range(...):
+        tmp_struct.append([])
+
+    for word in l:
+        if ... &gt;= len(word):
+            res.append(word)
+        else:
+            tmp_struct[ord(word[i]) - ... ].append(word)
+
+    tmp_struct = [tri_radix_MSD(... , ...) for j in tmp_struct]
+
+    for e_l in tmp_struct:
+        for e in e_l:
+            res.append(e)
+
+    return res
+</code></pre>
+<p><em>NB :</em> N’hésitez pas à demander de l’aide à votre professeur.</p>
+<h3 id="etude-de-complexité">Etude de complexité</h3>
+<p>A partir des fonctions implémentant les modules <em>matplotlib</em> et <em>timeit</em> déjà réalisées lors d’une activité précédente, <strong>réalisez un graphique illustrant la complexité temporelle du tri par base sur des chaines de caractères</strong>.  Vous implémenterez le tri par base, dans sa version MSD, dans le module “<em>tris .py</em>”, et réaliserez les fonctions relatives à la mesure du temps et à la création du graphique dans le module “<em>main .py</em>”. Veillez à adapter le code de l’activité passée. Pour ce qui est de la liste de mots, vous utiliserez la fonction <em>listeMotsAleatoires()</em>, disponible dans le module “<em>listes .py</em>”.</p>
+<p><strong>Rappel</strong></p>
+<p>L’utilisation de <strong>timeit</strong> se fait de la sorte :</p>
+<pre><code>for i in range(début, fin):
+        timeList.append(timeit(setup='from module import fonction',
+           stmt='monTri(maListe(i))',
+           number=n))
+</code></pre>
+<p>où <em>début</em> et <em>fin</em> sont les bornes de l’intervalle sur lesquelles la mesure du temps doit être effectuée,<br>
+<em>n</em> correspond au nombre de fois où l’instruction présente dans le champ <em>stmt</em> sera réalisée.</p>
+<p><em>Exemple</em></p>
+<pre><code>def timeitFunction(tri, liste, n):
+timeList = []
+for i in range(1, n+1):
+    timeList.append(timeit(setup='from tris import {}; from listes import {}'.format(tri, liste),
+    stmt='{}({}({}))'.format(tri, liste, i),
+    number=n))
+return timeList
+</code></pre>
+<p>L’utilisation de <strong>matplotlib</strong> pour des graphique se fait de la sorte :</p>
+<pre><code>def graphiqueMatPlotLib(tri, liste, n):
+    x = np.linspace(0, n, n)
+    fig, ax = plt.subplots()
+    y = timeitFunction(tri, liste, n)
+    ax.plot(x, y, label=tri)
+    plt.show()
+</code></pre>
+<p>Vous utiliserez de plus les méthodes suivantes pour agrémenter votre graphique :</p>
+<ul>
+<li>title()</li>
+<li>xlabel() &amp; ylabel()</li>
+<li>legend()</li>
+<li>grid()</li>
+</ul>
+<p>Votre graphique doit <strong>prouver que l’algorithme à une complexité temporelle en <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord mathnormal" style="margin-right: 0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mclose">)</span></span></span></span></span></strong> dans le meilleur des cas, et en <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>n</mi><mo>∗</mo><mi>m</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(n*m)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord mathnormal" style="margin-right: 0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right: 0.222222em;"></span></span><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord mathnormal">m</span><span class="mclose">)</span></span></span></span></span> dans le pire des cas (<span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi></mrow><annotation encoding="application/x-tex">m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.43056em; vertical-align: 0em;"></span><span class="mord mathnormal">m</span></span></span></span></span> étant la longueur de la plus longue chaine de caractère).</p>
+<p>Vous pouvez, en adaptant votre code, comparer le temps d’exécution ce cet algorithme de tri à la méthode <em>sort()</em> de Python, en réalisant une courbe avec le tri <em>tri_sort_python()</em> (qui adapte la méthode native <em>sorted()</em>).</p>
+<blockquote>
+<p>La complexité spatiale de ce tri est en <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>n</mi><mo>+</mo><mi>m</mi><mo>∗</mo><mi>b</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(n + m*b)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord mathnormal" style="margin-right: 0.02778em;">O</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right: 0.222222em;"></span></span><span class="base"><span class="strut" style="height: 0.46528em; vertical-align: 0em;"></span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right: 0.222222em;"></span></span><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord mathnormal">b</span><span class="mclose">)</span></span></span></span></span>, où <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi></mrow><annotation encoding="application/x-tex">m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.43056em; vertical-align: 0em;"></span><span class="mord mathnormal">m</span></span></span></span></span> est la longueur de la plus longue chaine de caractère, et <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi></mrow><annotation encoding="application/x-tex">b</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.69444em; vertical-align: 0em;"></span><span class="mord mathnormal">b</span></span></span></span></span> la taille du radix (10 dans le cas des entiers de 0 à 9, 256 dans le cas des caractères, 26 dans le cas des lettres majuscules de l’alphabet, …).<br>
+Cette version du tri par base utilise la récursivité, elle est optimisée pour un fonctionnement sur de larges collections de données, elle devient plus lente que la version <em>LSD</em> dans le cas contraire.</p>
+</blockquote>
+</div>
+</body>
+
+</html>
